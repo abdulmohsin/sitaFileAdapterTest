@@ -1,5 +1,7 @@
 package com.abdul.springintegration.file;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.support.ErrorMessage;
@@ -13,9 +15,9 @@ import org.springframework.messaging.support.ErrorMessage;
  *
  */
 public class FileErrorHandler {
-
+	private static final Logger logger = LoggerFactory.getLogger(FileErrorHandler.class);
 	public Message handleError(ErrorMessage errorMessage){
-		System.out.println("Handling error message : "+ errorMessage);
+		logger.info("Handling error message : "+ errorMessage);
 		Message<?> failedMessage = ((MessagingException)errorMessage.getPayload()).getFailedMessage();
 		return failedMessage;
 	}

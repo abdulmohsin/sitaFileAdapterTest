@@ -25,16 +25,16 @@
 
 	<int:header-enricher input-channel="strOutput"
 		output-channel="strOutputWithErrorChannel">
-		<int:error-channel ref="errorUnknown" />
+		<int:error-channel ref="errorUnknownChannel" />
 
 	</int:header-enricher>
 	<int:channel id="strOutputWithErrorChannel"/>
-    <int:channel id="errorUnknown"/>
+    <int:channel id="errorUnknownChannel"/>
 
 	<!-- Filtering out the invalid content files and move them to error channel 
 		for further action if needed -->
 
-	<int:filter input-channel="strOutputWithErrorChannel" discard-channel="errorContent"
+	<int:filter input-channel="strOutputWithErrorChannel" discard-channel="errorContentChannel"
 		ref="fileFilter" output-channel="filteredOutput" />
 
 	<bean id="fileFilter" class="com.abdul.springintegration.file.FileFilter">
@@ -43,9 +43,9 @@
 		<constructor-arg index="2" value="${dataSplitter}" />
 	</bean>
 
-	<int:channel id="errorContent" />
+	<int:channel id="errorContentChannel" />
 	<int-file:outbound-channel-adapter
-		channel="errorContent" directory="file:${file.errorDirectory}"
+		channel="errorContentChannel" directory="file:${file.errorDirectory}"
 		delete-source-files="true" filename-generator="errorFileNameGenerator" />
 
 	<bean id="errorFileNameGenerator" class="com.abdul.springintegration.file.FileNameGenerator">
@@ -73,13 +73,13 @@
 		the processed location -->
 
 	<int:service-activator id="activator"
-		input-channel="reply" ref="fileServiceActivator" output-channel="processed" />
+		input-channel="reply" ref="fileServiceActivator" output-channel="postProcessed" />
 	<int:channel id="reply" />
 
-	<int:channel id="processed" />
+	<int:channel id="postProcessed" />
 
 	<int-file:outbound-channel-adapter
-		channel="processed" directory="file:${file.processedDirectory}"
+		channel="postProcessed" directory="file:${file.processedDirectory}"
 		filename-generator="processedFileNameGenerator" delete-source-files="true" />
 
 	<bean id="processedFileNameGenerator" class="com.abdul.springintegration.file.FileNameGenerator">
@@ -91,7 +91,7 @@
 	<int:poller default="true" id="poller" fixed-delay="5000" />
 	
 	<!--  Unknown errors in flow processing -->
-	<int:service-activator input-channel="errorUnknown" output-channel="errorContent" ref="fileErrorHandler" />
+	<int:service-activator input-channel="errorUnknownChannel" output-channel="errorContentChannel" ref="fileErrorHandler" />
     <bean id="fileErrorHandler" class="com.abdul.springintegration.file.FileErrorHandler" /> 	
 
 </beans>

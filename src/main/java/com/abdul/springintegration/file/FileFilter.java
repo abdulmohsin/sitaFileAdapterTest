@@ -1,5 +1,7 @@
 package com.abdul.springintegration.file;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -9,7 +11,7 @@ import org.springframework.util.StringUtils;
  *
  */
 public class FileFilter {
-
+	private static final Logger logger = LoggerFactory.getLogger(FileFilter.class);
 	// configured choice to accept blank file or not
 	private boolean isBlankFileValid;
 	// configured valid regex of each line of the file
@@ -25,7 +27,7 @@ public class FileFilter {
 	}
 
 	public boolean isValid(String fileData) {
-		System.out.println("*********** File filter called" );
+		logger.info("Validating file's content" );
 		if (!StringUtils.isEmpty(fileData)) {
 			String[] lines = fileData.split(dataSplitter);
 			for (String line : lines) {
