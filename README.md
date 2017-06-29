@@ -43,10 +43,12 @@ http://repo1.maven.org/maven2/
 3.  The __file-to-string-transformer__ converts the input file data to string.
 4.  The output of #3 is passed to the __header-enricher__ for setting a default __error-channel__ (e.g errorUnknownChannel) to handle unknown errors in the integration flow if occured.
 5.  The Message/File is then passed to the __filter__ to filter out invalid content files.
-The filter is rejecting the files based on rule : Accepting only the file with numeric content.
-In case the file content is invalid , message is passed to the error/discard channel(e.g errorContentChannel) ( Refer : Negative Scenario : Invalid content).
 
-6.  The valid file/message gone through the filter is then passed to the  _transformer_ for processing.
+The filter is only accepting the files based on rule : "Only the file with numeric content is accepted" , this rule can be further changed/configured through property file.
+
+In case the file content is invalid , message is passed to the error/discard channel(e.g __errorContentChannel__) ( Refer : Negative Scenario : Invalid content).
+
+6.  The valid file/message gone through the filter is then passed to the  __transformer__ for processing.
 The transformer has the logic to generate the new file contents , the logic is to sum-up the integers present in the original file.
 In case of any unknown error in transforming ( even though the filter has already filtered-out the invalid content files) , message is moved to "errorUnknownChannel" for further processing.
 
