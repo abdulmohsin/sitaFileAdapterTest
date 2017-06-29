@@ -37,11 +37,11 @@ http://repo1.maven.org/maven2/
 3. Integration can be tested through the Junits(e.g FileIntegrationTest etc)
 
 ## Process Flow
-1. The inbound-channel-adapter will start automatically , poller configured will poll for the new messages from the configured input directory.
+1. The inbound-channel-adapter will start automatically and using configured poller will poll for the new messages from the configured input directory.
 2. For each message , integration will do the following steps:
-3. Configured "file-to-string-transformer" converts the data of the input file to string.
-4. Configured "header-enricher" is setting a default "error-channel" to handle unknown errors in the integration flow if occured.
-5. Message/File is passed to the "filter" to validate the content : 
+3. The "file-to-string-transformer" converts the data of the input file to string.
+4. The "header-enricher" is setting a default "error-channel" to handle unknown errors in the integration flow if occured.
+5. The Message/File is passed to the "filter" to validate the content : 
    if the content is valid as per the configured rules (e.g only integers are allowed ) then 
      * Message is moved to 
 
