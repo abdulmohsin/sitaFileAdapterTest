@@ -41,21 +41,29 @@ http://repo1.maven.org/maven2/
 1. The inbound-channel-adapter with poller will poll for the new files in the configured input directory.
 2. For each message , integration will perform the following steps:.
 3.  The __file-to-string-transformer__ converts the input file data to string.
-4.  The output of #3 is passed to the __header-enricher__ for setting a default __error-channel__ (e.g errorUnknownChannel) to handle unknown errors in the integration flow if occured.
+4.  The output of #3 is passed to the __header-enricher__ for setting a default __error-channel__ (e.g errorUnknownChannel) to 
+    handle  unknown errors in the integration flow if occured.
 5.  The Message/File is then passed to the __filter__ to filter out invalid content files.
 
-The filter is only accepting the files based on rule : "Only the file with numeric content is accepted" , this rule can be further changed/configured through property file.
+    The filter is only accepting the files based on rule : "Only the file with numeric content is accepted" , this rule can be 
+    further changed/configured through property file.
 
-In case the file content is invalid , message is passed to the error/discard channel(e.g __errorContentChannel__) ( Refer : Negative Scenario : Invalid content).
+    In case the file content is invalid , message is passed to the error/discard channel(e.g __errorContentChannel__) 
+    ( Refer : Negative   Scenario : Invalid content).
 
 6.  The valid file/message gone through the filter is then passed to the  __transformer__ for processing.
-The transformer has the logic to generate the new file contents , the logic is to sum-up the integers present in the original file.
-In case of any unknown error in transforming ( even though the filter has already filtered-out the invalid content files) , message is moved to "errorUnknownChannel" for further processing.
+    The transformer has the logic to generate the new file contents , the logic is to sum-up the integers present in the original file.
+    In case of any unknown error in transforming ( even though the filter has already filtered-out the invalid content files) , message 
+    is moved to "errorUnknownChannel" for further processing.
 
 7. Once the transformer has processed the file its output is moved to the __outbound-gateway__ to transfer it to the "OUT" directory.
-The outbound-gateway creates the processed file to the "OUT" directory with .OUTPUT suffix.
-The outbound-gateway is also configured with a __reply-channel__ to do any post processing (e.g moving of original files to PROCESSED dir)
+
+   The outbound-gateway creates the processed file to the "OUT" directory with .OUTPUT suffix.
+
+   The outbound-gateway is also configured with a __reply-channel__ to do any post processing (e.g moving of original files to 
+   PROCESSED dir).
  
-8. On successful transfer of processed files in "OUT" directory , service activator will pick the messagee from the __reply-channel__ and post the message to __postProcessed__ channel for post processing.
+8. On successful transfer of processed files in "OUT" directory , service activator will pick the messagee from the __reply-channel__ 
+   and post the message to __postProcessed__ channel for post processing.
 9. The __postProcessed__ channel will __move__ the original file from input to the PROCESSED directory with .PROCESSED suffix.
  
