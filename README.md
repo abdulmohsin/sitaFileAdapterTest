@@ -25,7 +25,8 @@ Project to demo basic file transfer using spring integration
 http://repo1.maven.org/maven2/
 
 
-## Build the application
+```[## Build the application](#buid-the-application)```
+[create an anchor]
 1. From the command prompt run mvn clean install
 
 ## Note
@@ -36,17 +37,23 @@ http://repo1.maven.org/maven2/
 2. Verify the results in C:\SITA_TEST_TASK\OUT and C:\SITA_TEST_TASK\ERROR.
 3. Integration can be tested through the Junits(e.g FileIntegrationTest etc)
 
-## Process Flow
-1. The inbound-channel-adapter will start automatically and using configured poller will poll for the new messages from the configured input directory.
-2. For each message , integration will do the following steps:
-3. The "file-to-string-transformer" converts the data of the input file to string.
-4. The "header-enricher" is setting a default "error-channel" to handle unknown errors in the integration flow if occured.
-5. The Message/File is passed to the "filter" to validate the content : 
-   if the content is valid as per the configured rules (e.g only integers are allowed ) then 
-     * Message is moved to 
+## Happy Scenario Process Flow
+1. The inbound-channel-adapter with poller will poll for the new files in the configured input directory.
+2. For each message , integration will perform the following steps:.
+3.  The __file-to-string-transformer__ converts the input file data to string.
+4.  The output of #3 is passed to the __header-enricher__ for setting a default __error-channel__ (e.g errorUnknownChannel) to handle unknown errors in the integration flow if occured.
+5.  The Message/File is then passed to the __filter__ to filter out invalid content files.
+The filter is rejecting the files based on rule : Accepting only the file with numeric content.
+In case the file content is invalid , message is passed to the error/discard channel(e.g errorContentChannel) ( Refer : Negative Scenario : Invalid content).
 
-3. All the messages one by one enter to router and the router will do the message validation. The validation will pass if the lines in the file contains numbers. If the validation fails then router will send the message to errorChannel.
-Otherwise the message will send to outputChannel.
-4. On the errorChannel we have outbound-channel-adapter and this is responsible to put message into the directory specified in configuration.
-5. On the outputChannel we have service-activator and the bean referred for this channel is responsible to generate the file content (sum of numbers) and will send to writeOutputChannel.
-6. On the writeOutputChannel we have outbound-channel-adapter which is responsible to generate the output in the configured directory. Since we have used configured file-name-generator then the application is having the control to decide the name of the file. This generator will add ".PROCESSED" at the end of original file name.
+6.  The valid file/message gone through the filter is then passed to the  _transformer_ for processing.
+The transformer has the logic to generate the new file contents , the logic is to sum-up the integers present in the original file.
+In case of any unknown error in transforming ( even though the filter has already filtered-out the invalid content files) , message is moved to "errorUnknownChannel" for further processing.
+
+7. Once the transformer has processed the file its output is moved to the __outbound-gateway__ to transfer it to the "OUT" directory.
+The outbound-gateway creates the processed file to the "OUT" directory with .OUTPUT suffix.
+The outbound-gateway is also configured with a __reply-channel__ to do any post processing (e.g moving of original files to PROCESSED dir)
+ 
+8. On successful transfer of processed files in "OUT" directory , service activator will pick the messagee from the __reply-channel__ and post the message to __postProcessed__ channel for post processing.
+9. The __postProcessed__ channel will __move__ the original file from input to the PROCESSED directory with .PROCESSED suffix.
+ 
