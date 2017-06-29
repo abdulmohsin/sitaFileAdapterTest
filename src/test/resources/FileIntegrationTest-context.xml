@@ -1,0 +1,97 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		p:location="classpath:application.properties" />
+
+	<int:channel id="input" />
+
+	
+	<!-- Reading file(s) by polling directory and converting to string output -->
+
+	<int-file:inbound-channel-adapter id="fileInputAdapter"
+		channel="input" directory="file:${file.inputDirectory}" />
+
+	<int-file:file-to-string-transformer
+		input-channel="input" output-channel="strOutput" />
+
+	<int:header-enricher input-channel="strOutput"
+		output-channel="strOutputWithErrorChannel">
+		<int:error-channel ref="errorUnknown" />
+
+	</int:header-enricher>
+	<int:channel id="strOutputWithErrorChannel"/>
+    <int:channel id="errorUnknown"/>
+
+	<!-- Filtering out the invalid content files and move them to error channel 
+		for further action if needed -->
+
+	<int:filter input-channel="strOutputWithErrorChannel" discard-channel="errorContent"
+		ref="fileFilter" output-channel="filteredOutput" />
+
+	<bean id="fileFilter" class="com.abdul.springintegration.file.FileFilter">
+		<constructor-arg index="0" value="${isEmptyFileAllowed}" />
+		<constructor-arg index="1" value="${lineValidRegex}" />
+		<constructor-arg index="2" value="${dataSplitter}" />
+	</bean>
+
+	<int:channel id="errorContent" />
+	<int-file:outbound-channel-adapter
+		channel="errorContent" directory="file:${file.errorDirectory}"
+		delete-source-files="true" filename-generator="errorFileNameGenerator" />
+
+	<bean id="errorFileNameGenerator" class="com.abdul.springintegration.file.FileNameGenerator">
+		<constructor-arg index="0" value=".ERROR" />
+	</bean>
+
+	<!-- Transform the valid files and process them with reply channel -->
+
+
+	<int:transformer input-channel="filteredOutput" ref="fileTransformer"
+		output-channel="output" />
+
+	<int-file:outbound-gateway request-channel="output"
+		directory="file:${file.outputDirectory}" filename-generator="outputFileNameGenerator"
+		reply-channel="reply" />
+
+	<int:channel id="output" />
+	<bean id="outputFileNameGenerator" class="com.abdul.springintegration.file.FileNameGenerator">
+		<constructor-arg index="0" value=".OUTPUT" />
+	</bean>
+
+	<bean id="fileTransformer" class="com.abdul.springintegration.file.FileTransformer" />
+
+	<!-- In case of success , do the post processing . Move original files to 
+		the processed location -->
+
+	<int:service-activator id="activator"
+		input-channel="reply" ref="fileServiceActivator" output-channel="processed" />
+	<int:channel id="reply" />
+
+	<int:channel id="processed" />
+
+	<int-file:outbound-channel-adapter
+		channel="processed" directory="file:${file.processedDirectory}"
+		filename-generator="processedFileNameGenerator" delete-source-files="true" />
+
+	<bean id="processedFileNameGenerator" class="com.abdul.springintegration.file.FileNameGenerator">
+		<constructor-arg index="0" value=".PROCESSED" />
+	</bean>
+
+	<bean id="fileServiceActivator" class="com.abdul.springintegration.file.FileActivator" />
+
+	<int:poller default="true" id="poller" fixed-delay="5000" />
+	
+	<!--  Unknown errors in flow processing -->
+	<int:service-activator input-channel="errorUnknown" output-channel="errorContent" ref="fileErrorHandler" />
+    <bean id="fileErrorHandler" class="com.abdul.springintegration.file.FileErrorHandler" /> 	
+
+</beans>
