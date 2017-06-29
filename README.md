@@ -1,4 +1,4 @@
-# Sita File Adapter Test
+# Sita Test Project
 Project to demo basic file transfer using spring integration 
 
 ## Task Details 
