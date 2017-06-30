@@ -3,7 +3,7 @@
 <body>
 <h1 align="center">Sita : Spring integration test project  </h1>
 
-<h2 align="center">Please place file in input directory: ${inputDir} to process them</h2>
+<h2 align="center">Please place file(s) in the input directory: ${inputDir} to process them</h2>
 <table border="5" align="center">
 <thead >
 <tr>
