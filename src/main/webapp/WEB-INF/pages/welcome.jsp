@@ -8,8 +8,8 @@
 <thead >
 <tr>
   <td><b>Input Dir</b></td>
-<td><b>Files processed in last 30 mins</b></td>
-<td><b>Files errored in last 30 mins</b></td>
+<td><b>Files successfully processed in last 30 mins</b></td>
+<td><b>Erroneous files  in last 30 mins</b></td>
 </tr>
 
 

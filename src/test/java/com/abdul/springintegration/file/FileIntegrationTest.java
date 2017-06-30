@@ -83,7 +83,7 @@ public class FileIntegrationTest {
 		
 		System.out.println(inputDirectory);
 		init(inputDirectory);
-		init(outputDirectory);
+		//init(outputDirectory);
 		init(processedDirectory);
 		init(errorDirectory);
 		

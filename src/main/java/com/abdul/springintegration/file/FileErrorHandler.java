@@ -16,8 +16,19 @@ import org.springframework.messaging.support.ErrorMessage;
  */
 public class FileErrorHandler {
 	private static final Logger logger = LoggerFactory.getLogger(FileErrorHandler.class);
-	public Message handleError(ErrorMessage errorMessage){
+	
+	/**
+	 * handleError : Method is taking the messaging generic exception message
+	 * and take-out the failing message from it
+	 * @param errorMessage : message thrown by the spring integration in case of any unknow errors
+	 * @return message : failing message.
+	 */
+	public Message<?> handleError(ErrorMessage errorMessage){
 		logger.info("Handling error message : "+ errorMessage);
+		/*
+		 *  As per doc , spring integration is wrapping any internal errors in the MessagingException
+		    and pack it on the payload of ErrorMessage.
+		 */
 		Message<?> failedMessage = ((MessagingException)errorMessage.getPayload()).getFailedMessage();
 		return failedMessage;
 	}

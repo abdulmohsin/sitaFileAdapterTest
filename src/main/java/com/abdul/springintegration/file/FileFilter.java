@@ -19,13 +19,23 @@ public class FileFilter {
 	// configured string for data separation e.g newline \\n
 	private String dataSplitter;
 
+	/**
+	 * FileFilter constructor for file filter
+	 * @param isBlankFileValid , configured value to accept blank file to transfer or not
+	 * @param lineValidRegex , configured regex for validating each line of the file
+	 * @param dataSplitter , data splitter
+	 */
 	public FileFilter(String isBlankFileValid, String lineValidRegex, String dataSplitter) {
 		this.isBlankFileValid = Boolean.valueOf(isBlankFileValid);
 		this.lineValidRegex = lineValidRegex;
 		this.dataSplitter = dataSplitter;
 
 	}
-
+/**
+ * isValid : Method to check if the content of the file is valid or not.
+ * @param fileData : content of the file
+ * @return true if content is valid else return false
+ */
 	public boolean isValid(String fileData) {
 		logger.info("Validating file's content" );
 		if (!StringUtils.isEmpty(fileData)) {

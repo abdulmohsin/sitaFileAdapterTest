@@ -14,10 +14,18 @@ public class FileNameGenerator implements org.springframework.integration.file.F
 
 	private static final Logger logger = LoggerFactory.getLogger(FileNameGenerator.class);
 	private String suffix;
+	
+	/**
+	 * FileNameGenerator : For generating output file name.
+	 * @param suffix
+	 */
 	public FileNameGenerator(String suffix){
 		this.suffix = suffix;
 	}
 	
+	/**
+	 * generateFileName : method for generating the output file name.
+	 */
 	public String generateFileName(Message<?> message){
 		String fileName = message.getHeaders().get("file_name").toString() + suffix;
 		logger.info("Generated file name: "+ fileName);

@@ -14,6 +14,11 @@ import org.springframework.util.StringUtils;
 public class FileTransformer {
 	private static final Logger logger = LoggerFactory.getLogger(FileTransformer.class);
 
+	/**
+	 * transformData : transform the data as per business requirement
+	 * @param data : content of the file
+	 * @return : transformed data
+	 */
 	public String transformData(String data){
 		long output =0l;
 		if(!StringUtils.isEmpty(data)){
@@ -23,7 +28,7 @@ public class FileTransformer {
 				if(!StringUtils.isEmpty(line.trim()))
 				output+= Long.parseLong(line.trim());
 			}
-			logger.info("Transforming Output : " + output);
+			logger.info("Output : " + output);
 		}
 		return String.valueOf(output);
 	}
