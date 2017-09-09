@@ -31,6 +31,8 @@ public class FileActivator {
 		// Messaging integration is storing the original file name in : file_originalFile
 				
 		Object originalFileName = headers.get("file_originalFile");
+
+		System.out.println("********** Changes part 2 on another clone"); 
 		if(originalFileName !=null){
 		
 			File original_file = new File(originalFileName.toString());
