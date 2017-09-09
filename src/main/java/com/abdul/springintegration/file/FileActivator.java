@@ -29,7 +29,11 @@ public class FileActivator {
 		MessageHeaders headers = message.getHeaders();
 
 		// Messaging integration is storing the original file name in : file_originalFile
-				
+				new DependencyTest().testMethodToCheckGit();
+		return handleMessageRefactored(headers);
+	}
+
+	private Message<?> handleMessageRefactored(MessageHeaders headers) {
 		Object originalFileName = headers.get("file_originalFile");
 		if(originalFileName !=null){
 		
