@@ -32,7 +32,7 @@ public class FileActivator {
 				
 		Object originalFileName = headers.get("file_originalFile");
 
-		System.out.println("********** Changes part 2 on another clone"); 
+		System.out.println("********** Changes part 3 on another clone"); 
 		if(originalFileName !=null){
 		
 			File original_file = new File(originalFileName.toString());
